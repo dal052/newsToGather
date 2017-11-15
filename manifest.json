@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+
+  "name": "Unlock",
+  "description": "Extension to read each article one by one. ",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "lock.png",
+    "default_popup": "index.html"
+  },
+  "content_scripts": [{
+        "matches": ["&lt;all_urls&gt;"],
+        "all_frames": true,
+        "js":      ["js/content.js"]
+    }],
+  "permissions": [
+    "activeTab",
+    "http://localhost:8080",
+    "storage"
+  ]
+}

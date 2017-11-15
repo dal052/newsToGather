@@ -1,22 +1,32 @@
 // app/routes.js
+// load up the user model
+var User            = require('../app/models/users');
+
 module.exports = function(app, passport) {
 
     // =====================================
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/', function(req, res) {
-        res.render('index.ejs'); // load the index.ejs file
+        if (req.isAuthenticated()){
+            //res.redirect('/profile');
+            res.render('profile.ejs', {
+                user : req.user // get the user out of session and pass to template
+            });
+        }else{
+            res.render('index.ejs'); // load the index.ejs file
+        }
     });
 
     // =====================================
     // LOGIN ===============================
     // =====================================
     // show the login form
-    app.get('/login', function(req, res) {
-
+    app.get('/login', blockifLoggedIn, function(req, res) {
         // render the page and pass in any flash data if it exists
         res.render('login.ejs', { message: req.flash('loginMessage') }); 
     });
+
 
     // process the login form
     app.post('/login', passport.authenticate('local-login', {
@@ -24,12 +34,11 @@ module.exports = function(app, passport) {
         failureRedirect : '/login', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
-
     // =====================================
     // SIGNUP ==============================
     // =====================================
     // show the signup form
-    app.get('/signup', function(req, res) {
+    app.get('/signup', blockifLoggedIn, function(req, res) {
 
         // render the page and pass in any flash data if it exists
         res.render('signup.ejs', { message: req.flash('signupMessage') });
@@ -53,6 +62,35 @@ module.exports = function(app, passport) {
         });
     });
 
+    // app.get('/profile/user', function(req,res){
+    //     User.findOne({'local.email': req.user.local.email}, function(err, user){
+    //         if (err){
+    //           res.send(err);
+    //         }
+    //         res.json(user);
+    //     });
+
+    // })
+
+    app.get('/addcredit', isLoggedIn, function(req, res) {
+        res.render('addcredit.ejs', {
+            user : req.user // get the user out of session and pass to template
+            //message: req.flash('mes');
+        });
+    });
+
+    app.post('/addcredit', isLoggedIn, function(req, res) {
+        User.findOne({'local.email': req.user.local.email}, function(err,user){
+            user.local.credit= user.local.credit+Number(req.body.credit.trim())
+
+            user.save(function(err){
+                if(err) console.log(err);
+                res.redirect('/profile');
+            })
+        });
+
+    });
+
     // =====================================
     // LOGOUT ==============================
     // =====================================
@@ -62,6 +100,12 @@ module.exports = function(app, passport) {
     });
 };
 
+//route back to where profile.ejs page if the user is already logged in
+function blockifLoggedIn(req, res, next){
+    if (req.isAuthenticated())
+        return res.redirect('/');
+    next();
+}
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
 
