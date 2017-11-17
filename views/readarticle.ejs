@@ -1,0 +1,26 @@
+<!--doctype html-->
+<html>
+<head>
+    <title>Unlock</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+
+
+</head>
+<body>
+<p><%= url %></p>
+</body>
+<script type="text/javascript">
+    //console.log($('p').val());
+    $.ajax({
+            url: $('p').val(),
+            type: "POST",
+            contentType: "text/html",
+            success: function(data) {
+                console.log(data);
+                //$('html').html(data);
+            }
+        });
+</script>
+</html>

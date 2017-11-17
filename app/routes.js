@@ -1,7 +1,7 @@
 // app/routes.js
 // load up the user model
-var User            = require('../app/models/users');
-
+var User    = require('../app/models/users');
+var request = require('request');
 module.exports = function(app, passport) {
 
     // =====================================
@@ -89,6 +89,35 @@ module.exports = function(app, passport) {
             })
         });
 
+    });
+
+    app.get('/readarticle', function(req, res) {
+        //console.log(req);
+
+        //console.log(req.query.article);
+        var url = 'http://192.227.217.77:8888/?url='+req.query.article;
+        //var url='http://www.google.com'
+        //console.log(typeof url, typeof req.headers);
+        //req.get({url: url});
+        //res.setHeader('Content-Type', 'application/json');
+        //res.send('Req OK');
+        request({
+            uri: url,
+            method: 'GET',
+            responseType: 'html'
+        }, function(error, response, body) {
+            if (!error) {
+                console.log(body);
+                res.write(body);
+            } else {
+                //response.end(error);
+                res.write(error);
+            }
+            res.end();
+        });
+        // res.render('readarticle.ejs',{
+        //     url : url
+        // }); 
     });
 
     // =====================================
